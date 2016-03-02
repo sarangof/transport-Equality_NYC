@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import scipy.stats
 import statsmodels.api as sm
-Income2013 = pd.read_csv('2013 income pc.csv',  header=True, names=["id", "id2block", "block", "PCincome", "error"]                         , usecols=["id2block", "PCincome"])
+Income2013 = pd.read_csv('2013 income pc.csv',  header=True, names=["id", "id2block", "block", "PCincome", "error"] , usecols=["id2block", "PCincome"])
 Income2013.PCincome = Income2013.PCincome.replace("-", "0")
 Income2013.PCincome = Income2013.PCincome.astype(int)
 Income2013.head()
@@ -30,3 +30,7 @@ CompA.head()
 CompA['CompA'] = np.log((CompA.Pcar*Carcost + CompA.PPTrans*PTcost + CompA.PBike*Bcost)/(CompA.PCincome))
 CompA.head()
 CompA.CompA.describe()
+CompA[CompA.CompA > 1]
+CompA['CompA1'] = (CompA.CompA - CompA.CompA.min())/(CompA.CompA.max() - CompA.CompA.min())
+CompA.head()
+CompA.CompA1.describe()
