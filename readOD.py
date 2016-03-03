@@ -25,7 +25,7 @@ for i in [0,1]:
         outfile.write(decompressedFile.read())
     df = pd.read_csv(outFilePath)
     df = df.drop(df.columns[3:],axis=1)
-    df = pd.merge(df,Income2013,on = ['w_geocode'],how='inner')
-    for index,row in df.iterrows():
-        if (int(str(row['w_geocode'])[:-3]) not in Income2013.id2block)  or (int(str(row['h_geocode'])[:-3]) not in Income2013.id2block):
-            df.drop(index,inplace=True)
+#    df = pd.merge(df,Income2013,on = ['w_geocode'],how='inner')
+#    for index,row in df.iterrows():
+#        if (int(str(row['w_geocode'])[:-3]) not in Income2013.id2block)  or (int(str(row['h_geocode'])[:-3]) not in Income2013.id2block):
+#            df.drop(index,inplace=True)
