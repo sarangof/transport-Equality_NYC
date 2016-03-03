@@ -10,6 +10,8 @@ import urllib2
 from StringIO import StringIO
 import gzip
 
+Income2013 = pd.read_csv('data/2013Incomepc.csv',  header=1, names=["id", "id2block", "block", "PCincome", "error"] , usecols=["id2block", "PCincome"])
+
 # get data file names
 dfs = []
 for i in [0,1]:
@@ -22,5 +24,7 @@ for i in [0,1]:
     with open(outFilePath,'w') as outfile:
         outfile.write(decompressedFile.read())
     df = pd.read_csv(outFilePath)
-    df.drop(df.columns[2:],axis=1)
-print df.head()    
+    df = df.drop(df.columns[3:],axis=1)
+                                            for index,row in df.iterrows():
+                                                if (int(str(row['w_geocode'])[:-3]) not in Income2013.id2block)  or (int(str(row['h_geocode'])[:-3]) not in Income2013.id2block):
+                                                    df.drop(index,inplace=True)
