@@ -9,6 +9,7 @@ import pandas as pd
 import urllib2
 from StringIO import StringIO
 import gzip
+import numpy as np
 
 Income2013 = pd.read_csv('data/2013Incomepc.csv',  header=1, names=["id", "id2block", "block", "PCincome", "error"] , usecols=["id2block", "PCincome"])
 
@@ -17,15 +18,16 @@ dfs = []
 for i in [0,1]:
     baseURL = 'http://lehd.ces.census.gov/data/lodes/LODES7/ny/od/'
     filename = 'ny_od_main_JT0'+ str(i) +'_2013.csv.gz'
-    outFilePath = filename[:-3]    
     response = urllib2.urlopen(baseURL + filename)
-    compressedFile = StringIO(response.read())
-    decompressedFile = gzip.GzipFile(fileobj=compressedFile) 
-    with open(outFilePath,'w') as outfile:
-        outfile.write(decompressedFile.read())
-    df = pd.read_csv(outFilePath)
-    df = df.drop(df.columns[3:],axis=1)
-#    df = pd.merge(df,Income2013,on = ['w_geocode'],how='inner')
-#    for index,row in df.iterrows():
-#        if (int(str(row['w_geocode'])[:-3]) not in Income2013.id2block)  or (int(str(row['h_geocode'])[:-3]) not in Income2013.id2block):
-#            df.drop(index,inplace=True)
+    compressedFile = StringIO()
+    compressedFile.write(response.read())
+    compressedFile.seek(0)
+    decompressedFile = gzip.GzipFile(fileobj=compressedFile,mode='rb')
+    data = pd.read_csv(decompressedFile,usecols=['w_geocode','h_geocode','S000']) 
+    data['id2block'] = data['w_geocode'].astype(str).str[:-3].astype(np.int64)
+    print(len(data))
+    df = pd.merge(data,Income2013, on = ['id2block'],how='inner')
+    print len(df)
+    df['id2block'] = data['h_geocode'].astype(str).str[:-3].astype(np.int64)
+    df = pd.merge(df,Income2013, on = ['id2block'],how='inner')
+    print(len(df))
