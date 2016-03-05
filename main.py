@@ -74,6 +74,7 @@ Component A - transportation expenses versus income
 #PTcost = sum(Costptrans2013.Pondcost)
 #Bcost = 95
 #CompA = pd.merge(Income2013, Mtrans2013, on=['id2block'])
+#CompA = CompA[CompA.CompA < 1]
 #CompA['CompA'] = np.log((CompA.Pcar*Carcost + CompA.PPTrans*PTcost + CompA.PBike*Bcost)/(CompA.PCincome))
 #CompA['CompA1'] = (CompA.CompA - CompA.CompA.min())/(CompA.CompA.max() - CompA.CompA.min())
 #

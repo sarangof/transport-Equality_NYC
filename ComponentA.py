@@ -31,6 +31,8 @@ CompA['CompA'] = np.log((CompA.Pcar*Carcost + CompA.PPTrans*PTcost + CompA.PBike
 CompA.head()
 CompA.CompA.describe()
 CompA[CompA.CompA > 1]
+CompA = CompA[CompA.CompA < 1]
+CompA.CompA.describe()
 CompA['CompA1'] = (CompA.CompA - CompA.CompA.min())/(CompA.CompA.max() - CompA.CompA.min())
 CompA.head()
 CompA.CompA1.describe()
