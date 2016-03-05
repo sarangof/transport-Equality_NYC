@@ -55,26 +55,26 @@ Component A - transportation expenses versus income
 """
 
 #
-Income2013 = pd.read_csv('data/2013Incomepc.csv',  header=1, names=["id", "id2block", "block", "PCincome", "error"] , usecols=["id2block", "PCincome"])
-Income2013.PCincome = Income2013.PCincome.replace("-", "0")
-Income2013.PCincome = Income2013.PCincome.astype(int)
-Mtrans2013 = pd.read_csv('data/Meanoftransportation.csv',  header=1, usecols=[1, 5, 21,37])
-Mtrans2013.columns = ['id2block', 'Car', 'PTrans', 'Bike']
-Mtrans2013['Tcommuters'] = Mtrans2013.Car + Mtrans2013.PTrans + Mtrans2013.Bike
-Mtrans2013['Pcar'] = Mtrans2013.Car/Mtrans2013.Tcommuters
-Mtrans2013['PPTrans'] = Mtrans2013.PTrans/Mtrans2013.Tcommuters
-Mtrans2013['PBike'] = Mtrans2013.Bike/Mtrans2013.Tcommuters
-Costcar2013 = pd.read_excel('data/norteastCES2013.xlsx',  header=1, usecols=["Item", "New York"])
-Costcar2013 = Costcar2013[43:46]
-Carcost = sum(Costcar2013["New York"])
-Costptrans2013 = pd.read_excel('data/Publictransportationcosts.xlsx')
-Costptrans2013['Pondcost'] = Costptrans2013.Porcentage*Costptrans2013['Value per trip']*Costptrans2013['Trips per year']
-PTcost = sum(Costptrans2013.Pondcost)
-Bcost = 95
-CompA = pd.merge(Income2013, Mtrans2013, on=['id2block'])
-CompA['CompA'] = np.log((CompA.Pcar*Carcost + CompA.PPTrans*PTcost + CompA.PBike*Bcost)/(CompA.PCincome))
-CompA['CompA1'] = (CompA.CompA - CompA.CompA.min())/(CompA.CompA.max() - CompA.CompA.min())
-IT_index['A'] = CompA['CompA1']
+#Income2013 = pd.read_csv('data/2013income pc.csv',  header=True, names=["id", "id2block", "block", "PCincome", "error"] , usecols=["id2block", "PCincome"])
+#Income2013.PCincome = Income2013.PCincome.replace("-", "0")
+#Income2013.PCincome = Income2013.PCincome.astype(int)
+#Mtrans2013 = pd.read_csv('data/Meanoftransportation.csv',  header=True, usecols=[1, 5, 21,37])
+#Mtrans2013.columns = ['id2block', 'Car', 'PTrans', 'Bike']
+#Mtrans2013['Tcommuters'] = Mtrans2013.Car + Mtrans2013.PTrans + Mtrans2013.Bike
+#Mtrans2013['Pcar'] = Mtrans2013.Car/Mtrans2013.Tcommuters
+#Mtrans2013['PPTrans'] = Mtrans2013.PTrans/Mtrans2013.Tcommuters
+#Mtrans2013['PBike'] = Mtrans2013.Bike/Mtrans2013.Tcommuters
+#Costcar2013 = pd.read_excel('data/norteastCES2013.xlsx',  header=True, usecols=["Item", "New York"])
+#Costcar2013 = Costcar2013[43:46]
+#Carcost = sum(Costcar2013["New York"])
+#Costptrans2013 = pd.read_excel('data/Publictransportation costs.xlsx')
+#Costptrans2013['Pondcost'] = Costptrans2013.Porcentage*Costptrans2013['Value per trip']*Costptrans2013['Trips per year']
+#PTcost = sum(Costptrans2013.Pondcost)
+#Bcost = 95
+#CompA = pd.merge(Income2013, Mtrans2013, on=['id2block'])
+#CompA = CompA[CompA.CompA < 1]
+#CompA['CompA'] = np.log((CompA.Pcar*Carcost + CompA.PPTrans*PTcost + CompA.PBike*Bcost)/(CompA.PCincome))
+#CompA['CompA1'] = (CompA.CompA - CompA.CompA.min())/(CompA.CompA.max() - CompA.CompA.min())
 
 
 """
