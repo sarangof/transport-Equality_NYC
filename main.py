@@ -11,24 +11,15 @@ import matplotlib.pyplot as plt
 import pylab as pl
 import pandas as pd
 import numpy as np
-#import scipy.stats
-#import statsmodels.api as sm
-#import glob
-#import requests
-#import io
-#from StringIO import StringIO
-#import gzip
-#import urllib2
 
 IT_index = pd.DataFrame([])
 
-""" Initial step: build number of people that travel between block groups by mode.
+""" 
+IT_index is a data frame that will include all the components of our index.
+This code is split among between the three components of the index.
+
 """
 
-# Load number of people travelling between block groups.
-
-
-# Load modes per people, transform to frequency
 
 """
 Component A - transportation expenses versus income
@@ -79,13 +70,14 @@ avgTime = np.array([2.5,7,12,17,22,27,32,37,42,52,74,100])
 timeW['av_time']  =  (timeW[[u'ET_5',u'ET5_9','ET_14',u'ET_19',u'ET_24','ET_29',u'ET_34',
                           u'ET_39',u'ET_44',u'ET_59',u'ET_89',u'ET_90m']]*avgTime).sum(axis=1)
 timeW['av_time']  = timeW['av_time']/timeW['E_Total']
-
 OD = pd.read_csv('data/ODjobs.csv')
 
 
 timeW['CompB']    = timeW['av_time']/1
 timeW=timeW.rename(columns = {'Id2':'id2block'})
 IT_index = pd.merge(timeW[['id2block','CompB']],CompA[['id2block','CompA']],on = 'id2block')
+
+
 
 """
 # Component C - Accesibility
