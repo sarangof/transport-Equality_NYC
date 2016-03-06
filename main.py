@@ -71,11 +71,12 @@ timeW['av_time']  =  (timeW[[u'ET_5',u'ET5_9','ET_14',u'ET_19',u'ET_24','ET_29',
                           u'ET_39',u'ET_44',u'ET_59',u'ET_89',u'ET_90m']]*avgTime).sum(axis=1)
 timeW['av_time']  = timeW['av_time']/timeW['E_Total']
 OD = pd.read_csv('data/ODjobs.csv')
+OD=OD.rename(columns = {'w_geocode':'id2block'})
 
 
 timeW['CompB']    = timeW['av_time']/1
-timeW=timeW.rename(columns = {'Id2':'id2block'})
-IT_index = pd.merge(timeW[['id2block','CompB']],CompA[['id2block','CompA']],on = 'id2block')
+timeW             = timeW.rename(columns = {'Id2':'id2block'})
+IT_index          = pd.merge(timeW[['id2block','CompB']],CompA[['id2block','CompA']],on = 'id2block')
 
 
 
