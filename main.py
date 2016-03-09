@@ -71,13 +71,20 @@ timeW['av_time']  =  (timeW[[u'ET_5',u'ET5_9','ET_14',u'ET_19',u'ET_24','ET_29',
 timeW['av_time']  = timeW['av_time']/timeW['E_Total']
 OD = pd.read_csv('data/ODjobs.csv')
 OD=OD.rename(columns = {'h_geocode':'id2block'})
-timeW['CompB']    = timeW['av_time']/1
+
+distW = pd.read_csv('data/dist.csv',names=['ind','av_distance'],usecols=['av_distance'],header=0)
+distW['av_distance'] = distW['av_distance'].astype(np.float64)
+IT_index['CompB']    = timeW['av_time']
 
 
-timeW['CompB'] = (timeW['CompB']  - timeW['CompB'].min()) / (timeW['CompB'].max()-timeW['CompB'].min())
 timeW             = timeW.rename(columns = {'Id2':'id2block'})
-IT_index          = pd.merge(timeW[['id2block','CompB']],CompA[['id2block','CompA1']],on = 'id2block')
+IT_index          = pd.merge(timeW[['id2block','av_time']],CompA[['id2block','CompA1']],on = 'id2block')
 IT_index          = IT_index.rename(columns = {'CompA1':'CompA'})
+distW             = distW.set_index(IT_index['id2block'])
+IT_index['av_distance'] = np.array(distW['av_distance'])
+IT_index['CompB'] = IT_index['av_time'] / IT_index['av_distance']
+IT_index['CompB'] = (IT_index['CompB']  - IT_index['CompB'].min()) / (IT_index['CompB'].max()-IT_index['CompB'].min())
+
 
 """
 # Component C - Accesibility
