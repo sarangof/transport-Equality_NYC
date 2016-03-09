@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Mar  2 11:38:29 2016
-
-@author: saf537
 """
 
 #import shapefile as shp
@@ -87,16 +85,6 @@ author: Xia Wang
 date: 03/08/2015
 """
 
-# C3 = pd.read_table('data/data_clean.csv', sep = ',',usecols=['CBG_id','Shape_Area', u'Num_Metro_update', u'Num_Bus_update'])
-# C3=C3.rename(columns = {'CBG_id':'id2block'})
-#IT_index['id2block'] = IT_index['id2block'].astype(str).str[1:].astype(np.int64)
-# C3['CompC'] = (0.55*C3['Num_Metro_update'] + 0.45*C3['Num_Bus_update']) / C3['Shape_Area']
-# C3['CompC'] = (C3['CompC'] - C3['CompC'].min()) / (C3['CompC'].max() - C3['CompC'].min() ) 
-#IT_index = pd.merge(C3[['id2block','CompC']],IT_index,on='id2block')
-
-# IT_index['total'] = 1.0/3*IT_index['CompA'] + 1.0/3*IT_index['CompB'] + 1.0/3*IT_index['CompC']
-# IT_index.total.hist()
-
 # read the original Bus_Metro_Bike data
 data = pd.read_csv('data/Bus_Metro.txt', header = 0)
 databike = pd.read_csv('data/Bike_Bus_Metro.txt', header = 0)
@@ -150,8 +138,19 @@ bike_merge['CompBike'] = ((bike_merge['Bike_pre']*1.0 - bike_merge['Bike_pre'].m
                           (bike_merge['Bike_pre'].max() - bike_merge['Bike_pre'].min()))
 
 # combine the 3 subindices and give them equal weight
-bike_merge['index3'] = 0.3333 * bike_merge['CompBus'] + 0.3333 * bike_merge['CompMetro'] + 0.3333 * bike_merge['CompBike']
-bike_merge['index3_norm'] = ((bike_merge['index3']*1.0 - bike_merge['index3'].min()) / 
-                             (bike_merge['index3'].max() - bike_merge['index3'].min()))
+bike_merge['CompC'] = 0.3333 * bike_merge['CompBus'] + 0.3333 * bike_merge['CompMetro'] + 0.3333 * bike_merge['CompBike']
+bike_merge['CompC_norm'] = ((bike_merge['CompC']*1.0 - bike_merge['CompC'].min()) / 
+                             (bike_merge['CompC'].max() - bike_merge['CompC'].min()))
 # build a dataFrame for index 3
-Comp3 = bike_merge[['index3', 'index3_norm']]
+CompC = bike_merge[['CBG_id','CompC', 'CompC_norm']]
+CompC['CompC_norm'] = -CompC['CompC_norm'] + 1
+
+ 
+CompC=CompC.rename(columns = {'CBG_id':'id2block'})
+#IT_index['id2block'] = IT_index['id2block'].astype(str).str[1:].astype(np.int64)
+# C3['CompC'] = (0.55*C3['Num_Metro_update'] + 0.45*C3['Num_Bus_update']) / C3['Shape_Area']
+# C3['CompC'] = (C3['CompC'] - C3['CompC'].min()) / (C3['CompC'].max() - C3['CompC'].min() ) 
+IT_index = pd.merge(CompC[['id2block','CompC_norm']],IT_index,on='id2block')
+#
+IT_index['total'] = 1.0/3*IT_index['CompA'] + 1.0/3*IT_index['CompB'] + 1.0/3*IT_index['CompC_norm']
+IT_index.total.hist()
