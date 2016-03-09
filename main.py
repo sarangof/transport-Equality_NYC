@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import pylab as pl
 import pandas as pd
 import numpy as np
+import seaborn as sns
 
 IT_index = pd.DataFrame([])
 
@@ -49,7 +50,7 @@ CompA[CompA.CompA > 1]
 CompA = CompA[CompA.CompA < 1]
 CompA['CompA1'] = (CompA.CompA - CompA.CompA.min())/(CompA.CompA.max() - CompA.CompA.min())
 
-CompA.set_index(CompA['id2block'])
+#CompA.set_index(CompA['id2block'])
 IT_index['CompA'] = CompA['CompA1']
 #IT_index.set_index(Income2013.id2block)
 
@@ -71,25 +72,25 @@ timeW['av_time']  =  (timeW[[u'ET_5',u'ET5_9','ET_14',u'ET_19',u'ET_24','ET_29',
                           u'ET_39',u'ET_44',u'ET_59',u'ET_89',u'ET_90m']]*avgTime).sum(axis=1)
 timeW['av_time']  = timeW['av_time']/timeW['E_Total']
 OD = pd.read_csv('data/ODjobs.csv')
-OD=OD.rename(columns = {'w_geocode':'id2block'})
-
-
+OD=OD.rename(columns = {'h_geocode':'id2block'})
 timeW['CompB']    = timeW['av_time']/1
+
+
+timeW['CompB'] = (timeW['CompB']  - timeW['CompB'].min()) / (timeW['CompB'].max()-timeW['CompB'].min())
 timeW             = timeW.rename(columns = {'Id2':'id2block'})
-IT_index          = pd.merge(timeW[['id2block','CompB']],CompA[['id2block','CompA']],on = 'id2block')
-
-
+IT_index          = pd.merge(timeW[['id2block','CompB']],CompA[['id2block','CompA1']],on = 'id2block')
+IT_index          = IT_index.rename(columns = {'CompA1':'CompA'})
 
 """
 # Component C - Accesibility
 """
 
-C3 = pd.read_table('data/CB_final.txt', sep = ',',usecols=['BCTCB2010','Area', 'Within_Met', 'Num_Bus_Stop','Within_Buf'])
-C3=C3.rename(columns = {'BCTCB2010':'id2block'})
-IT_index['id2block'] = IT_index['id2block'].astype(str).str[1:].astype(np.int64)
+C3 = pd.read_table('data/data_clean.csv', sep = ',',usecols=['CBG_id','Shape_Area', u'Num_Metro_update', u'Num_Bus_update'])
+C3=C3.rename(columns = {'CBG_id':'id2block'})
+#IT_index['id2block'] = IT_index['id2block'].astype(str).str[1:].astype(np.int64)
+C3['CompC'] = (0.55*C3['Num_Metro_update'] + 0.45*C3['Num_Bus_update']) / C3['Shape_Area']
+C3['CompC'] = (C3['CompC'] - C3['CompC'].min()) / (C3['CompC'].max() - C3['CompC'].min() ) 
+IT_index = pd.merge(C3[['id2block','CompC']],IT_index,on='id2block')
 
-C3['CompC'] = C3['Within_Buf'] / C3['Area']
-
-#IT_index = pd.merge(C3[['id2block','CompC']],IT_index,on='id2block')
-
-#IT_index['CompC'] = 1
+IT_index['total'] = 1.0/3*IT_index['CompA'] + 1.0/3*IT_index['CompB'] + 1.0/3*IT_index['CompC']
+IT_index.total.hist()
