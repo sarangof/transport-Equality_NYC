@@ -83,14 +83,75 @@ IT_index          = IT_index.rename(columns = {'CompA1':'CompA'})
 
 """
 # Component C - Accesibility
+author: Xia Wang
+date: 03/08/2015
 """
 
-C3 = pd.read_table('data/data_clean.csv', sep = ',',usecols=['CBG_id','Shape_Area', u'Num_Metro_update', u'Num_Bus_update'])
-C3=C3.rename(columns = {'CBG_id':'id2block'})
+# C3 = pd.read_table('data/data_clean.csv', sep = ',',usecols=['CBG_id','Shape_Area', u'Num_Metro_update', u'Num_Bus_update'])
+# C3=C3.rename(columns = {'CBG_id':'id2block'})
 #IT_index['id2block'] = IT_index['id2block'].astype(str).str[1:].astype(np.int64)
-C3['CompC'] = (0.55*C3['Num_Metro_update'] + 0.45*C3['Num_Bus_update']) / C3['Shape_Area']
-C3['CompC'] = (C3['CompC'] - C3['CompC'].min()) / (C3['CompC'].max() - C3['CompC'].min() ) 
-IT_index = pd.merge(C3[['id2block','CompC']],IT_index,on='id2block')
+# C3['CompC'] = (0.55*C3['Num_Metro_update'] + 0.45*C3['Num_Bus_update']) / C3['Shape_Area']
+# C3['CompC'] = (C3['CompC'] - C3['CompC'].min()) / (C3['CompC'].max() - C3['CompC'].min() ) 
+#IT_index = pd.merge(C3[['id2block','CompC']],IT_index,on='id2block')
 
-IT_index['total'] = 1.0/3*IT_index['CompA'] + 1.0/3*IT_index['CompB'] + 1.0/3*IT_index['CompC']
-IT_index.total.hist()
+# IT_index['total'] = 1.0/3*IT_index['CompA'] + 1.0/3*IT_index['CompB'] + 1.0/3*IT_index['CompC']
+# IT_index.total.hist()
+
+# read the original Bus_Metro_Bike data
+data = pd.read_csv('data/Bus_Metro.txt', header = 0)
+databike = pd.read_csv('data/Bike_Bus_Metro.txt', header = 0)
+# data.shape
+data['Num_Metro_update'] = None
+# update the number of metro for CBGs that are within the 0.25 mile buffer
+for i in data.index:
+    if data.ix[i,'Metro_Buff'] > data.ix[i, 'Num_Metro']:
+        data.ix[i, 'Num_Metro_update'] = data.ix[i, 'Metro_Buff']
+    elif data.ix[i, 'Num_Metro'] <= data.ix[i, 'Num_Metro']:
+        data.ix[i, 'Num_Metro_update'] = data.ix[i, 'Num_Metro']
+
+data['Num_Bus_update'] = None
+# update the number of Bus for CBGs that are within the 0.25 mile buffer
+for i in data.index:
+    if data.ix[i,'Bus_Buff'] > data.ix[i, 'Num_Bus']:
+        data.ix[i, 'Num_Bus_update'] = data.ix[i, 'Bus_Buff']
+    elif data.ix[i, 'Num_Bus'] <= data.ix[i, 'Num_Bus']:
+        data.ix[i, 'Num_Bus_update'] = data.ix[i, 'Num_Bus']
+# create a new intermediate dataFrame with all and only the relevant columns        
+data_clean = data[['CBG_id', 'Num_Metro_update','Num_Bus_update', 'BlockGroupArea']]
+data_clean['CBG_id'].astype(str, inplace = True)
+# data_clean.shape
+# create a new dataFrame with bike length and Census Block Group ID
+bike = databike[['CBG_id','BikeLength']]
+# bike.head()
+bike['CBG_id'].astype(str, inplace = True)
+# if one block group has more than one section of bike lane, add all the length to that CBG
+bike_agg = bike.groupby('CBG_id').aggregate(sum)
+bike_agg.reset_index(inplace = True)
+# bike_agg.head()
+# combine the bike length and the Bus_Metro data
+bike_merge = pd.merge(data_clean, bike_agg,
+                      how = 'left',
+                      on= 'CBG_id')
+# bike_merge['CBG_id'].shape
+# substitute the nans with 0 
+bike_merge.replace(np.nan, 0, inplace = True)
+# calculate the subindices for Bus, Metro and Bike Separately
+# Bus_subindex
+bike_merge['Bus_pre'] = bike_merge['Num_Bus_update']*1.0 / bike_merge['BlockGroupArea']
+bike_merge['CompBus'] = ((bike_merge['Bus_pre']*1.0 - bike_merge['Bus_pre'].min()) / 
+                          (bike_merge['Bus_pre'].max() - bike_merge['Bus_pre'].min()))
+# Metro_subindex
+bike_merge['Metro_pre'] = bike_merge['Num_Metro_update']*1.0 / bike_merge['BlockGroupArea']
+bike_merge['CompMetro'] = ((bike_merge['Metro_pre']*1.0 - bike_merge['Metro_pre'].min()) / 
+                          (bike_merge['Metro_pre'].max() - bike_merge['Metro_pre'].min()))
+# Bike_subindex
+bike_merge['Bike_pre'] = bike_merge['BikeLength'] / bike_merge['BlockGroupArea']
+bike_merge['CompBike'] = ((bike_merge['Bike_pre']*1.0 - bike_merge['Bike_pre'].min()) / 
+                          (bike_merge['Bike_pre'].max() - bike_merge['Bike_pre'].min()))
+
+# combine the 3 subindices and give them equal weight
+bike_merge['index3'] = 0.3333 * bike_merge['CompBus'] + 0.3333 * bike_merge['CompMetro'] + 0.3333 * bike_merge['CompBike']
+bike_merge['index3_norm'] = ((bike_merge['index3']*1.0 - bike_merge['index3'].min()) / 
+                             (bike_merge['index3'].max() - bike_merge['index3'].min()))
+# build a dataFrame for index 3
+Comp3 = bike_merge[['index3', 'index3_norm']]
