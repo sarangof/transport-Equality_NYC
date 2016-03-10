@@ -10,6 +10,7 @@ import pylab as pl
 import pandas as pd
 import numpy as np
 import seaborn as sns
+import scipy.stats as sp
 
 IT_index = pd.DataFrame([])
 
@@ -160,4 +161,16 @@ CompC=CompC.rename(columns = {'CBG_id':'id2block'})
 IT_index = pd.merge(CompC[['id2block','CompC_norm']],IT_index,on='id2block')
 #
 IT_index['total'] = 1.0/3*IT_index['CompA'] + 1.0/3*IT_index['CompB'] + 1.0/3*IT_index['CompC_norm']
-IT_index.total.hist()
+#Plotting the results
+ax1 = IT_index.total.hist(grid=True, figsize=(7,5), alpha=0.7)
+ax1.set_xlabel("Score", fontsize = 11)
+ax1.set_title("NYC Transportation Inequity Index", fontsize = 14)
+IT_index.plot(x='CompA', y='CompB', kind='scatter')
+IT_index.plot(x='CompA', y='CompC_norm', kind='scatter')
+IT_index.plot(x='CompB', y='CompC_norm', kind='scatter')
+#Calculating pearsons correlation between components
+print(sp.pearsonr(IT_index.CompA, IT_index.CompB))
+print(sp.pearsonr(IT_index.CompA, IT_index.CompC_norm))
+print(sp.pearsonr(IT_index.CompB, IT_index.CompC_norm))
+
+
