@@ -5,7 +5,7 @@ This is a team project for the Urban Science Intensive course at CUSP, NYU. In t
 The following data is acquired from different sources listed below.
 - The income data and the census blockgroup shapefiles are acquired from [U.S. Census Bureau](http://www.census.gov/).
 - The commute origin and destination estimate is acquired from [LODES LEHD](http://lehd.ces.census.gov/data/lodes/LODES7/LODESTechDoc7.0.pdf).
-- The shapefiles for NYC subway and bus routes and stops were found in the[William and Anita Newman Library of Baruch College, CUNY].
+- The shapefiles for NYC subway and bus routes and stops were found in the [William and Anita Newman Library of Baruch College, CUNY](https://www.baruch.cuny.edu/confluence/display/geoportal/NYC+Mass+Transit+Spatial+Layers).
 - The bikelane shapefile is downloaded from [NYC Bike Maps](http://www.nycbikemaps.com/maps/manhattan-bike-map/).
 Some data have gone through previous geospatial treatment in ArcGIS or geopandas. The results of preprocessed data, on the other hand, are provided in the folder [data](https://github.com/Elixeus/transportEqualityNYC/tree/master/data) for the purpose of reproducibility.
 
