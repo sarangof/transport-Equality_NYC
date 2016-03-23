@@ -1,6 +1,11 @@
 # Transportation Equality @ NYC
 ## Project summary
 This is a team project for the Urban Science Intensive course at CUSP, NYU. In this project we try to calculate an index that reflects the inequality in transportation for every census blockgroup of NYC. The index has 3 components: the transportation cost / income ratio; the agony; and the transportation availability. See main.py for more details how each component is calculated as well as how they are combined together.
+## Result
+The result of the project is shown in the map below:
+<p align='center'>
+    <img src="https://raw.githubusercontent.com/Elixeus/transportEqualityNYC/master/transinequal.png" width='600'/>
+<p>
 ## Data and reproducibility
 The following data is acquired from different sources listed below.
 - The income data and the census blockgroup shapefiles are acquired from [U.S. Census Bureau](http://www.census.gov/).
